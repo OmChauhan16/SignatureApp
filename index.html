@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature App</title>
+    <style>
+        /* .top {
+            display: flex;
+            gap: 70px;
+            align-items: center;
+            justify-content: center;
+            margin-left: 50px;
+            margin-top: 20px;
+        }
+
+        .mid {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            margin-left: 50px;
+            margin-top: 20px;
+        }
+
+        .color-picker {
+            width: 90%;
+        }
+
+        canvas {
+            border: 1px solid black;
+            margin-left: 350px;
+            margin-top: 20px;
+            width: 620px;
+            height: 350px;
+            
+        }
+
+        .bottom {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            gap: 50px;
+        }
+
+        .bottom .clear {
+            background-color: red;
+            width: 150px;
+            border-radius: 5px;
+            color: aliceblue;
+            border: none;
+            margin-left: 50px;
+        }
+
+        .bottom .download {
+            background-color: green;
+            width: 150px;
+            border-radius: 5px;
+            color: aliceblue;
+            border: none;
+        }
+
+        .bottom .retrieve {
+            background-color: rgb(235, 194, 12);
+            width: 150px;
+            border-radius: 5px;
+            color: rgb(0, 0, 0);
+            border: none;
+            width: 200px;
+            height: 30px;
+        }
+
+        .color-pickerbg {
+            width: 120%;
+        }
+
+        #fontSize {
+            width: 150%;
+            margin-left: 10px;
+            height: 30px;
+        }
+
+        #fontsize {
+            margin-left: 10px;
+        } */
+
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .top,
+        .mid,
+        .bottom {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 10px;
+        }
+
+        .top div,
+        .mid div {
+            flex: 1 1 100%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .color-picker,
+        .color-pickerbg {
+            width: 50%;
+        }
+
+        canvas {
+            border: 1px solid black;
+            width: 100%;
+            max-width: 620px;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .clear,
+        .download,
+        .retrieve {
+            width: 100%;
+            max-width: 200px;
+            height: 40px;
+            border-radius: 5px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px;
+            text-align: center;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        .clear {
+            background-color: red;
+        }
+
+        .download {
+            background-color: green;
+        }
+
+        .retrieve {
+            background-color: rgb(235, 194, 12);
+            color: black;
+        }
+
+        #fontSize {
+            width: 50%;
+            height: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .top,
+            .mid,
+            .bottom {
+                /* gap: 40px; */
+            }
+
+            .top div,
+            .mid div {
+                /* flex: 1; */
+                /* max-width: none; */
+            }
+
+            .clear,
+            .download,
+            .retrieve {
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top">
+        <div>
+            <p>Text Color Picker</p>
+            <input class="color-picker" type="color" name="" id="color-picker">
+        </div>
+        <div>
+            <p>Background</p>
+            <input class="color-pickerbg" type="color" name="" id="color-pickerbg">
+        </div>
+        <div>
+            <p id="fontsize">Font Size</p>
+            <select name="" id="fontSize">
+                <option value="10">10px</option>
+                <option value="20">20px</option>
+                <option value="30">30px</option>
+                <option value="40">40px</option>
+                <option value="50">50px</option>
+            </select>
+        </div>
+
+    </div>
+    <canvas id="myCanvas" width="620" height="350"></canvas>
+    <div class="bottom">
+        <button class="clear" id="clear">Clear</button>
+        <button class="download" id="download">Download</button>
+        <button class="retrieve" id="retrieve">Retrieve Saved Signature</button>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const colorPicker = document.getElementById("color-picker");
+            const canvasColor = document.getElementById("color-pickerbg");
+            const canvas = document.getElementById("myCanvas");
+            const clearButton = document.getElementById("clear");
+            const saveButton = document.getElementById('download');
+            const retrieveButton = document.getElementById('retrieve');
+            const fontSizePicker = document.getElementById('fontSize');
+            const ctx = canvas.getContext('2d');
+
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+            colorPicker.addEventListener('change', (e) => {
+                ctx.strokeStyle = e.target.value;
+                ctx.fillStyle = e.target.value;
+            })
+
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                lastX = event.offsetX;
+                lastY = event.offsetY;
+            })
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDrawing) {
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(event.offsetX, event.offsetY);
+                    ctx.stroke();
+
+                    lastX = event.offsetX;
+                    lastY = event.offsetY;
+                }
+            })
+
+            canvas.addEventListener('mouseup', () => {
+                isDrawing = false;
+            })
+
+            canvasColor.addEventListener('change', (e) => {
+                ctx.fillStyle = e.target.value;
+                ctx.fillRect(0, 0, 620, 350);
+            })
+
+            fontSizePicker.addEventListener('change', (e) => {
+                ctx.lineWidth = e.target.value;
+            })
+
+            clearButton.addEventListener('click', () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            })
+
+            saveButton.addEventListener('click', () => {
+                localStorage.setItem('canvasContents', canvas.toDataURL());
+
+                let link = document.createElement('a');
+
+                link.download = 'my-canvas.png';
+
+                link.href = canvas.toDataURL();
+
+                link.click();
+            })
+
+            retrieveButton.addEventListener('click', () => {
+                let savedCanvas = localStorage.getItem('canvasContents');
+
+                if (savedCanvas) {
+                    let img = new Image();
+                    img.src = savedCanvas;
+                    ctx.drawImage(img, 0, 0);
+                }
+            })
+        })
+
+    </script>
+</body>
+
+</html>
